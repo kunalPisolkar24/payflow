@@ -1,5 +1,6 @@
 import { CardWithForm } from "./demo";
-
+import { PrismaClient } from "@repo/db/client";
+const client = new PrismaClient();
 export default function Page() {
   return (
     <main className="m-auto">
