@@ -48,7 +48,7 @@ This will create a new empty app in the `apps` directory.
 If you want, you can copy an existing app with:
 
 ```sh
-pnpm turbo gen workspace --name <app-name> --copy
+
 ```
 
 > [!NOTE]
@@ -114,7 +114,7 @@ npx turbo link
 
 ## Useful Links
 
-Learn more about the power of Turborepo:
+Learn more about thpnpm turbo gen workspace --name <app-name> --copye power of Turborepo:
 
 - [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
 - [Caching](https://turbo.build/repo/docs/core-concepts/caching)
