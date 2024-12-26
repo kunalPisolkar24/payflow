@@ -68,8 +68,12 @@ export default function Navbar() {
           </Button>
 
           {/* Login Button */}
-          <Button variant="outline" className="hidden sm:flex" asChild>
-            <Link href="/signup">Login</Link>
+          <Button variant="outline" className="rounded-xl h-[35px] hidden sm:flex" asChild>
+            <Link href="/login">Login</Link>
+          </Button>
+
+          <Button className="rounded-xl h-[35px] hidden sm:flex" asChild>
+            <Link href="/signup">Sign Up</Link>
           </Button>
 
           {/* Mobile Menu */}
@@ -119,6 +123,9 @@ export default function Navbar() {
                   </Button>
                   <Button variant="outline" asChild>
                     <Link href="/login">Login</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/signup">Sign Up</Link>
                   </Button>
                 </div>
               </nav>
