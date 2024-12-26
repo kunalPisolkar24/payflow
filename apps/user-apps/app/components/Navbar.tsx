@@ -69,7 +69,7 @@ export default function Navbar() {
 
           {/* Login Button */}
           <Button variant="outline" className="hidden sm:flex" asChild>
-            <Link href="/login">Login</Link>
+            <Link href="/signup">Login</Link>
           </Button>
 
           {/* Mobile Menu */}
