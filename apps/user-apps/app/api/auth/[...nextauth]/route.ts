@@ -1,11 +1,12 @@
 import NextAuth from "next-auth";
-import type { NextAuthOptions, User } from "next-auth";
+import type { NextAuthOptions, User, Session } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaClient } from "@repo/db/client";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { JWT } from "next-auth/jwt";
 
 const prisma = new PrismaClient();
 
@@ -31,7 +32,6 @@ export const authOptions: NextAuthOptions = {
         },
       },
       async authorize(credentials, req) {
-        // Validate input with Zod
         const emailSchema = z.string().email();
         const passwordSchema = z.string().min(8);
 
@@ -44,22 +44,26 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!user || !user.password) {
-            return null; // User not found or password not set
+            return null;
           }
 
-          // Compare the password with the hashed password in the database
-          const passwordsMatch = await bcrypt.compare(validPassword, user.password);
+          const passwordsMatch = await bcrypt.compare(
+            validPassword,
+            user.password
+          );
 
           if (!passwordsMatch) {
-            return null; // Invalid password
+            return null;
           }
 
-          // Return the user object that matches the expected type
+          // Return a user object that matches the expected structure
           return {
-            id: user.id.toString(), // Ensure the id is a string
+            id: user.id.toString(),
             name: user.name,
             email: user.email,
-          } as User;
+            image: user.image,
+            emailVerified: user.emailVerified,
+          };
         } catch (error) {
           console.error("Validation or authorization error:", error);
           return null;
@@ -69,32 +73,89 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      // Check if the sign-in is via credentials
       if (account?.provider === "credentials") {
-        // If it's a new user (no user.id), find the user by email and merge data
         if (!user.id) {
           const existingUser = await prisma.user.findUnique({
             where: { email: user.email! },
           });
           if (existingUser) {
-            // If a user with this email exists, merge the data
-            // This step assumes your `user` object from credentials has the `name` property
             await prisma.user.update({
               where: { id: existingUser.id },
               data: {
-                name: user.name, // Ensure 'name' is included from the credentials
-                // Add other fields to update if necessary
+                name: user.name,
               },
             });
           }
         }
+      } else if (account?.provider === "google") {
+        // Ensure user exists and is linked to their Google account
+        let existingUser = await prisma.user.findUnique({
+          where: { email: user.email! },
+        });
+
+        if (!existingUser) {
+          existingUser = await prisma.user.create({
+            data: {
+              name: user.name,
+              email: user.email,
+              emailVerified: new Date(),
+              image: user.image,
+            },
+          });
+        }
+        const existingAccount = await prisma.account.findFirst({
+          where: {
+            userId: Number(existingUser.id),
+            provider: "google",
+            providerAccountId: profile?.sub!,
+          },
+        });
+
+        if (!existingAccount) {
+          await prisma.account.create({
+            data: {
+              userId: Number(existingUser.id),
+              type: "oauth",
+              provider: "google",
+              providerAccountId: profile?.sub!,
+              access_token: account.access_token,
+              expires_at: account.expires_at,
+              refresh_token: account.refresh_token,
+              token_type: account.token_type,
+              scope: account.scope,
+              id_token: account.id_token,
+              session_state: account.session_state,
+            },
+          });
+        }
       }
       return true;
     },
-    async session({ session, user }) {
-      session.user = user; // Customize session object as needed
+    async jwt({ token, user, account }): Promise<JWT> {
+      if (user) {
+        // During initial sign-in, user object is available
+        token.id = user.id; // Add user ID to the token
+        token.name = user.name;
+        token.email = user.email;
+        token.image = user.image;
+      }
+      return token;
+    },
+    async session({ session, token }): Promise<Session> {
+      // When session is accessed, token is available
+      if (token) {
+        session.user = {
+          id: token.id,
+          name: token.name,
+          email: token.email,
+          image: token.image,
+        } as User; // Cast to User type
+      }
       return session;
     },
+  },
+  session: {
+    strategy: "jwt", // Use JWT strategy for sessions
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

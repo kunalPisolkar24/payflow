@@ -1,26 +1,69 @@
 "use client";
 
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { Wallet2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@repo/ui/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-} from "@repo/ui/components/ui/card";
+import { Card, CardContent, CardFooter } from "@repo/ui/components/ui/card";
 import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
 import { useTheme } from "next-themes";
+import { signIn } from "next-auth/react";
+import { useToast } from "@repo/ui/hooks/use-toast";
 
 interface LoginFormProps {
   isLoading: boolean;
-  onSubmit: (event: FormEvent) => void;
 }
 
-export default function LoginForm({ isLoading, onSubmit }: LoginFormProps) {
+export default function LoginForm({ isLoading: isSubmitting }: LoginFormProps) {
   const { resolvedTheme } = useTheme();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: email,
+        password: password,
+      });
+
+      if (result?.error) {
+        setError(result.error);
+        toast({
+          title: "Login Error",
+          description: result.error,
+          variant: "destructive",
+        });
+      } else if (result?.ok) {
+        toast({
+          title: "Login Successful",
+          description: "You have successfully logged in.",
+        });
+        // Redirect to the dashboard after successful login
+        window.location.href = "/dashboard";
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      setError("An unexpected error occurred during login");
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <div className="container relative min-h-screen flex-col items-center justify-center py-12 grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -28,7 +71,8 @@ export default function LoginForm({ isLoading, onSubmit }: LoginFormProps) {
         <div
           className="absolute inset-0 bg-zinc-900 bg-cover bg-center"
           style={{
-            backgroundImage: "url(https://images.unsplash.com/photo-1708982756246-7af9dc64b5e8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&dl=robert-schneider-oEbU4UqhJoA-unsplash.jpg)", // Make sure this path is correct
+            backgroundImage:
+              "url(https://images.unsplash.com/photo-1708982756246-7af9dc64b5e8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&dl=robert-schneider-oEbU4UqhJoA-unsplash.jpg)",
             filter: "blur(4px)",
           }}
         />
@@ -47,9 +91,8 @@ export default function LoginForm({ isLoading, onSubmit }: LoginFormProps) {
         >
           <blockquote className="space-y-2">
             <p className="text-lg">
-              “PayFlow has revolutionized how we handle international
-              payments. The platform's speed and security are unmatched in the
-              industry.”
+              “PayFlow has revolutionized how we handle international payments.
+              The platform's speed and security are unmatched in the industry.”
             </p>
             <footer className="text-sm">Sofia Davis, CEO of GlobalTech</footer>
           </blockquote>
@@ -57,6 +100,11 @@ export default function LoginForm({ isLoading, onSubmit }: LoginFormProps) {
       </div>
       <div className="lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+              {error}
+            </div>
+          )}
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
               Log in to your account
@@ -72,6 +120,7 @@ export default function LoginForm({ isLoading, onSubmit }: LoginFormProps) {
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
+                    name="email"
                     placeholder="Enter your email"
                     type="email"
                     autoCapitalize="none"
@@ -85,6 +134,7 @@ export default function LoginForm({ isLoading, onSubmit }: LoginFormProps) {
                   <Label htmlFor="password">Password</Label>
                   <Input
                     id="password"
+                    name="password"
                     placeholder="Enter your password"
                     type="password"
                     autoCapitalize="none"
@@ -103,8 +153,14 @@ export default function LoginForm({ isLoading, onSubmit }: LoginFormProps) {
                   variant="outline"
                   type="button"
                   className="w-full"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
+                  onClick={() =>
+                    signIn("google", {
+                      callbackUrl: "/dashboard",
+                    })
+                  }
                 >
+                  
                   <svg
                     className="mr-2 h-4 w-4"
                     viewBox="0 0 24 24"
