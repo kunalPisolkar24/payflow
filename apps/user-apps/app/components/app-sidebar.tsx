@@ -13,7 +13,11 @@ import {
   Settings,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Avatar, AvatarFallback, AvatarImage } from "@repo/ui/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@repo/ui/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,9 +38,13 @@ import {
 } from "@repo/ui/components/ui/sidebar";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { Button } from "@repo/ui/components/ui/button";
+import { signOut } from "next-auth/react";
 
 export function AppSidebar() {
   const { theme, setTheme } = useTheme();
+  const { data: session, status } = useSession();
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -59,6 +67,12 @@ export function AppSidebar() {
       url: "/user-app/p2p",
     },
   ];
+
+  // Use user data from session if available
+  const user = session?.user;
+  const userName = user?.name || "John Doe"; // Fallback to "John Doe" if name is not available
+  const userEmail = user?.email || "john@example.com"; // Fallback to default email
+  const userImage = user?.image;
 
   return (
     <Sidebar className="border-r bg-background">
@@ -104,21 +118,23 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="border-t p-2">
+      <SidebarFooter className="border-t p-3 pt-3">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <motion.div whileTap={{ scale: 0.95 }}>
                   <SidebarMenuButton className="gap-3 rounded-lg py-2 hover:bg-muted/80">
-                    <Avatar className="size-10 border-2 border-muted">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback>JD</AvatarFallback>
+                    <Avatar className="size-8 border-2 border-muted">
+                      <AvatarImage src={userImage ?? ""} />
+                      <AvatarFallback>
+                        {userName.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col items-start gap-0.5">
-                      <span className="font-semibold">John Doe</span>
+                      <span className="font-semibold">{userName}</span>
                       <span className="text-xs text-muted-foreground">
-                        john@example.com
+                        {userEmail}
                       </span>
                     </div>
                   </SidebarMenuButton>
@@ -133,15 +149,17 @@ export function AppSidebar() {
                 <DropdownMenuLabel>
                   <div className="flex items-center gap-3 p-2">
                     <Avatar className="size-14 border-2 border-muted">
-                      <AvatarImage src="/placeholder.svg" />
-                      <AvatarFallback>JD</AvatarFallback>
+                      <AvatarImage src={userImage ?? ""} />
+                      <AvatarFallback>
+                        {userName.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col gap-1">
                       <p className="text-base font-semibold leading-none">
-                        John Doe
+                        {userName}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        john@example.com
+                        {userEmail}
                       </p>
                     </div>
                   </div>
@@ -169,9 +187,18 @@ export function AppSidebar() {
                   )}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-3 py-2 text-red-600 dark:text-red-500">
-                  <LogOut className="size-5" />
-                  <span>Logout</span>
+                <DropdownMenuItem
+                  asChild
+                  className="gap-3 py-2 text-red-600 dark:text-red-500"
+                >
+                  <Button
+                    variant="ghost"
+                    className="w-full"
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                  >
+                    <LogOut className="size-5" />
+                    <span>Logout</span>
+                  </Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
