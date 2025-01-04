@@ -118,13 +118,13 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="border-t p-3 pt-3">
+      <SidebarFooter className="border-t p-4 pt-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <motion.div whileTap={{ scale: 0.95 }}>
-                  <SidebarMenuButton className="gap-3 rounded-lg py-2 hover:bg-muted/80">
+                  <SidebarMenuButton className="gap-3 rounded-lg py-[20px] hover:bg-muted/80">
                     <Avatar className="size-8 border-2 border-muted">
                       <AvatarImage src={userImage ?? ""} />
                       <AvatarFallback>

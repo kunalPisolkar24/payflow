@@ -1,4 +1,6 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import { Separator } from "@repo/ui/components/ui/separator";
 import {
   Breadcrumb,
@@ -16,8 +18,15 @@ import { useSession } from "next-auth/react";
 export function Header() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getBreadcrumbItems = () => {
+    if (!pathname) return [];
+    
     const segments = pathname
       .split("/")
       .filter((segment) => segment !== "")
@@ -35,8 +44,12 @@ export function Header() {
     return breadcrumbItems;
   };
 
+  // Don't render anything until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return null;
+  }
+
   const breadcrumbItems = getBreadcrumbItems();
-  const userName = session?.user?.name || "User";
 
   return (
     <header className="sticky top-0 z-50 flex h-14 items-center gap-4 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -48,8 +61,8 @@ export function Header() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/dashboard" className="text-sm font-medium">
-                {userName}
+              <BreadcrumbLink className="text-sm font-medium">
+                Tabs
               </BreadcrumbLink>
               <BreadcrumbSeparator>
                 <ChevronRight className="size-3.5" />
