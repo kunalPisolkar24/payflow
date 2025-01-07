@@ -15,7 +15,11 @@ import { SidebarTrigger } from "@repo/ui/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-export function Header() {
+type HeaderProps = {
+  activePage: string;
+};
+
+export function Header({ activePage }: HeaderProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
@@ -25,26 +29,34 @@ export function Header() {
   }, []);
 
   const getBreadcrumbItems = () => {
-    if (!pathname) return [];
-    
-    const segments = pathname
-      .split("/")
-      .filter((segment) => segment !== "")
-      .slice(1); // Remove 'dashboard' segment
     const breadcrumbItems: Array<{ label: string; href: string }> = [];
-    
-    let currentPath = "/dashboard";
-    for (const segment of segments) {
-      currentPath += `/${segment}`;
-      breadcrumbItems.push({
-        label: segment.charAt(0).toUpperCase() + segment.slice(1),
-        href: currentPath,
-      });
+    breadcrumbItems.push({
+      label: "Dashboard",
+      href: "/dashboard",
+    });
+
+    let activeLabel = "";
+    switch (activePage) {
+      case "transfer":
+        activeLabel = "Transfer";
+        break;
+      case "transaction":
+        activeLabel = "Transaction";
+        break;
+      case "p2p":
+        activeLabel = "P2P Transfer";
+        break;
+      default:
+        activeLabel = "Transfer"; // Default label
     }
+
+    breadcrumbItems.push({
+      label: activeLabel,
+      href: `/dashboard/${activePage}`, // Still create a URL, even if it's not used for routing
+    });
     return breadcrumbItems;
   };
 
-  // Don't render anything until mounted to prevent hydration mismatch
   if (!mounted) {
     return null;
   }
@@ -62,31 +74,25 @@ export function Header() {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink className="text-sm font-medium">
-                Tabs
+                Dashboard
               </BreadcrumbLink>
               <BreadcrumbSeparator>
                 <ChevronRight className="size-3.5" />
               </BreadcrumbSeparator>
             </BreadcrumbItem>
-            {breadcrumbItems.map((item, index) => (
+            {breadcrumbItems.slice(1).map((item, index) => (
               <BreadcrumbItem key={item.href}>
-                {index === breadcrumbItems.length - 1 ? (
+                {/* No need for conditional rendering here since we always have at least 2 items */}
+                <>
                   <BreadcrumbPage className="text-sm font-medium">
                     {item.label}
                   </BreadcrumbPage>
-                ) : (
-                  <>
-                    <BreadcrumbLink
-                      href={item.href}
-                      className="text-sm font-medium"
-                    >
-                      {item.label}
-                    </BreadcrumbLink>
+                  {index !== breadcrumbItems.length - 2 && (
                     <BreadcrumbSeparator>
                       <ChevronRight className="size-3.5" />
                     </BreadcrumbSeparator>
-                  </>
-                )}
+                  )}
+                </>
               </BreadcrumbItem>
             ))}
           </BreadcrumbList>

@@ -37,14 +37,15 @@ import {
   SidebarRail,
 } from "@repo/ui/components/ui/sidebar";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Button } from "@repo/ui/components/ui/button";
 import { signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
-export function AppSidebar() {
+export function AppSidebar({ setActivePage, activePage }: any) {
   const { theme, setTheme } = useTheme();
   const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -54,25 +55,50 @@ export function AppSidebar() {
     {
       title: "Transfer",
       icon: ArrowLeftRight,
-      url: "/user-app/transfer",
+      url: "#",
+      page: "transfer",
     },
     {
       title: "Transaction",
       icon: Receipt,
-      url: "/user-app/transaction",
+      url: "#",
+      page: "transaction",
     },
     {
       title: "P2P Transfer",
       icon: Users2,
-      url: "/user-app/p2p",
+      url: "#",
+      page: "p2p",
     },
   ];
 
-  // Use user data from session if available
   const user = session?.user;
-  const userName = user?.name || "John Doe"; // Fallback to "John Doe" if name is not available
-  const userEmail = user?.email || "john@example.com"; // Fallback to default email
+  const userName = user?.name || "John Doe";
+  const userEmail = user?.email || "john@example.com";
   const userImage = user?.image;
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0 },
+  };
+
+  const iconVariants = {
+    normal: {
+      color: theme === "dark" ? "#D1D5DB" : "#4B5563", // Light gray in dark mode, dark gray in light mode
+    },
+    active: {
+      color: theme === "dark" ? "#FFFFFF" : "#000000", // White in dark mode, black in light mode
+    },
+  };
+
+  const textVariants = {
+    normal: {
+      color: theme === "dark" ? "#D1D5DB" : "#4B5563",
+    },
+    active: {
+      color: theme === "dark" ? "#FFFFFF" : "#000000",
+    },
+  };
 
   return (
     <Sidebar className="border-r bg-background">
@@ -101,17 +127,38 @@ export function AppSidebar() {
         <SidebarMenu className="p-2">
           {navItems.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <motion.div whileTap={{ scale: 0.95 }}>
+              <motion.div
+                variants={itemVariants}
+                initial="hidden"
+                animate="visible"
+                whileTap={{ scale: 0.95 }}
+              >
                 <SidebarMenuButton
-                  asChild
-                  className="gap-3 rounded-lg hover:bg-muted/80"
+                  onClick={() => {
+                    setActivePage(item.page);
+                  }}
+                  className={`group gap-3 rounded-lg px-3 py-2 hover:bg-accent hover:text-accent-foreground  ${
+                    activePage === item.page
+                      ? "bg-muted text-muted-foreground dark:bg-muted/70 dark:text-white"
+                      : ""
+                  }`}
                 >
-                  <Link href={item.url}>
-                    <div className="flex size-10 items-center justify-center rounded-lg bg-muted/50">
-                      <item.icon className="size-5 text-foreground/70" />
-                    </div>
-                    <span className="font-medium">{item.title}</span>
-                  </Link>
+                  <motion.div
+                    variants={iconVariants}
+                    initial="normal"
+                    animate={activePage === item.page ? "active" : "normal"}
+                    className="flex size-10 items-center justify-center rounded-lg"
+                  >
+                    <item.icon className="size-5" />
+                  </motion.div>
+                  <motion.span
+                    variants={textVariants}
+                    initial="normal"
+                    animate={activePage === item.page ? "active" : "normal"}
+                    className="font-medium"
+                  >
+                    {item.title}
+                  </motion.span>
                 </SidebarMenuButton>
               </motion.div>
             </SidebarMenuItem>
