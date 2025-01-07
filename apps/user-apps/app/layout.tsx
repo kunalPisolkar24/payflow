@@ -1,20 +1,22 @@
 import "@repo/ui/globals.css";
 import { Inter } from "next/font/google";
-const inter = Inter({ subsets: ["latin"] });
 import type { Metadata } from "next";
 import { ThemeProvider } from "@repo/ui/components/theme-provider";
 import { Providers } from "./provider";
 import { Toaster } from "@repo/ui/components/ui/toaster";
+
+const inter = Inter({ subsets: ["latin"] });
+
 export const metadata: Metadata = {
   title: "PayFlow",
   description: "Send Payments Worldwide 10X Faster",
 };
 
-export default function RootLayout({
-  children,
-}: {
+type RootLayoutProps = {
   children: React.ReactNode;
-}) {
+};
+
+const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -27,11 +29,12 @@ export default function RootLayout({
         >
           <Providers>
             {children}
-            <Toaster/>
+            <Toaster />
           </Providers>
         </ThemeProvider>
       </body>
     </html>
   );
-}
+};
 
+export default RootLayout;
