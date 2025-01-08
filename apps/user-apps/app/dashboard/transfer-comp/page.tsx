@@ -1,10 +1,9 @@
+import TransferForm from "./TransferForm";
+
 const TransferPage: React.FC = () => {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">Transfer</h1>
-      <p>This is the Transfer page.</p>
-    </div>
-  );
+  return <>
+  <TransferForm/>
+  </>;
 };
 
 export default TransferPage;

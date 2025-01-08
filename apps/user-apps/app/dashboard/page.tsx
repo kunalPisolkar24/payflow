@@ -4,7 +4,7 @@ import { SidebarProvider, SidebarInset } from "@repo/ui/components/ui/sidebar";
 import { AppSidebar } from "../components/app-sidebar";
 import { useState, useEffect } from "react";
 import { Header } from "./Header";
-import TransferComponent from "./transfer-comp/page";
+import TransferComponent from "./transfer-comp/page.tsx";
 import TransactionComponent from "./transactions-comp/page";
 import P2PComponent from "./p2p-comp/page";
 import { Loader } from "@repo/ui/components/loader"; 

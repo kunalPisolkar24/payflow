@@ -9,6 +9,7 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@prisma/client": "6.1.0",
     "@repo/db": "workspace:*",
@@ -21,6 +22,7 @@
     "next-themes": "^0.4.4",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
+    "react-hook-form": "^7.54.2",
     "usehooks-ts": "^3.1.0",
     "zod": "^3.24.1"
   },
