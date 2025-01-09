@@ -244,9 +244,9 @@ export default function TransferForm() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full py-5 px-3"
+        className="w-[700px] px-3"
       >
-        <Card className="w-full max-w-2xl mx-5">
+        <Card className="w-full max-w-2xl">
           <CardHeader>
             <CardTitle>Transfer Money</CardTitle>
             <CardDescription>

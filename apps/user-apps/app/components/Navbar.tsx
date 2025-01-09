@@ -11,7 +11,7 @@ import {
   SheetTrigger,
 } from "@repo/ui/components/ui/sheet";
 
-export default function Navbar() {
+const Navbar: React.FC = () => {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -136,3 +136,5 @@ export default function Navbar() {
     </header>
   );
 }
+
+export default Navbar;
