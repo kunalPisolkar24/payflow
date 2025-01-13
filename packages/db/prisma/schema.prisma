@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
+  id                 String   @id @default(cuid())
   userId             Int
   type               String
   provider           String
@@ -35,14 +35,16 @@ model Session {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   name          String?
-  email         String?   @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
-  password      String? 
+  password      String?
   accounts      Account[]
   sessions      Session[]
+  wallet        Wallet?      
+  transactions  Transaction[] 
 }
 
 model VerificationToken {
@@ -51,4 +53,43 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Wallet {
+  id        Int     @id @default(autoincrement())
+  balance   Decimal @default(0.00)
+  userId    Int     @unique       
+  user      User    @relation(fields: [userId], references: [id])
+  sourceTransactions Transaction[] @relation("SourceWallet")
+  targetTransactions Transaction[] @relation("TargetWallet")
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Transaction {
+  id             Int               @id @default(autoincrement())
+  type           TransactionType
+  status         TransactionStatus @default(COMPLETED) 
+  amount         Decimal
+  description    String?
+  timestamp      DateTime          @default(now())
+  userId         Int 
+  user           User              @relation(fields: [userId], references: [id])
+  sourceWalletId Int? 
+  sourceWallet   Wallet?           @relation("SourceWallet", fields: [sourceWalletId], references: [id])
+  targetWalletId Int?
+  targetWallet   Wallet?           @relation("TargetWallet", fields: [targetWalletId], references: [id])
+  bankName       String? 
+  accountNumber  String? 
+  ifscCode       String? 
 }

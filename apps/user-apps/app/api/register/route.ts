@@ -1,3 +1,4 @@
+
 import { PrismaClient } from "@repo/db/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -13,6 +14,7 @@ const userSchema = z.object({
     .string()
     .min(8, { message: "Password must be at least 8 characters long" }),
 });
+
 
 export async function POST(request: Request) {
   try {
@@ -40,15 +42,19 @@ export async function POST(request: Request) {
       },
     });
 
+    // Create a new wallet for the user
+    await prisma.wallet.create({
+      data: {
+        userId: newUser.id,
+      },
+    });
+
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
     console.error("Error during user registration:", error);
-    if (
-      error instanceof Error &&
-      error.message.includes("Unique constraint failed")
-    ) {
-      return NextResponse.json({ error: "Email already in use" }, { status: 409 });
-    }
-    return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

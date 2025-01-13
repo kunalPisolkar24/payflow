@@ -5,11 +5,7 @@ import { motion } from "framer-motion";
 import { Wallet2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@repo/ui/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-} from "@repo/ui/components/ui/card";
+import { Card, CardContent, CardFooter } from "@repo/ui/components/ui/card";
 import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
 import { useTheme } from "next-themes";
@@ -53,7 +49,7 @@ export default function SignUpForm({
           email,
           password,
           redirect: true,
-          callbackUrl: "/", // Redirect to the homepage after sign in
+          callbackUrl: "/dashboard", // Redirect to the homepage after sign in
         });
 
         if (!signInResult?.error) {
@@ -65,7 +61,7 @@ export default function SignUpForm({
         } else {
           console.error("Error signing in:", signInResult.error);
           setError(
-            signInResult.error || "Failed to sign in after registration"
+            signInResult.error || "Failed to sign in after registration",
           );
         }
       } else {
@@ -103,13 +99,19 @@ export default function SignUpForm({
             filter: "blur(4px)",
           }}
         />
-        <Link
-          href="/"
-          className="relative z-20 flex items-center text-lg font-medium"
-        >
-          <Wallet2 className="mr-2 h-6 w-6" />
-          PayFlow
-        </Link>
+        {
+          // @ts-ignore
+          <Link
+            href="/"
+            className="relative z-20 flex items-center text-lg font-medium"
+          >
+            {
+              // @ts-ignore
+              <Wallet2 className="mr-2 h-6 w-6" />
+            }
+            PayFlow
+          </Link>
+        }
         <motion.div
           className="relative z-20 mt-auto"
           initial={{ opacity: 0, y: 20 }}
@@ -201,7 +203,7 @@ export default function SignUpForm({
                   disabled={isSubmitting}
                   onClick={() =>
                     signIn("google", {
-                      callbackUrl: "/",
+                      callbackUrl: "/dashboard",
                     })
                   }
                 >
@@ -238,12 +240,15 @@ export default function SignUpForm({
           </Card>
           <p className="px-8 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link
-              href="/login"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              <strong> Log in</strong>
-            </Link>
+            {
+              // @ts-ignore
+              <Link
+                href="/login"
+                className="underline underline-offset-4 hover:text-primary"
+              >
+                <strong> Log in</strong>
+              </Link>
+            }
           </p>
         </div>
       </div>

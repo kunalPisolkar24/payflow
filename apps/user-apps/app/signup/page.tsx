@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import SignUpForm from "@repo/ui/components/Signup";
 import { Loader } from "@repo/ui/components/loader";
 import { useSession } from "next-auth/react";
@@ -8,20 +8,20 @@ import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
   const [isPageLoading, setIsPageLoading] = useState(true);
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsPageLoading(false);
-    }, 1000); // Simulate loading the SignUpForm
+    }, 1000); 
 
-    if (status === "authenticated") {
+    if (status === "authenticated" && session) {
       router.push("/dashboard"); // Redirect to dashboard if already authenticated
     }
 
     return () => clearTimeout(timer);
-  }, [status]);
+  }, [status, session, router]);
 
   return (
     <div>
