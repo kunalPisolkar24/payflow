@@ -66,7 +66,7 @@ model Wallet {
 
 enum TransactionType {
   DEPOSIT
-  WITHDRAWAL
+  WITHDRAW
   TRANSFER
 }
 

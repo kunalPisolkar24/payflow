@@ -43,6 +43,9 @@ import {
   CardTitle,
 } from "@repo/ui/components/ui/card";
 import { useTheme } from "next-themes";
+import { useSession } from "next-auth/react";
+import { toast } from "@repo/ui/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   amount: z
@@ -102,6 +105,8 @@ export default function TransferForm() {
   const [isSuccess, setIsSuccess] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState("deposit");
   const { theme } = useTheme();
+  const { data: session } = useSession();
+  const router = useRouter();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -115,16 +120,50 @@ export default function TransferForm() {
   });
 
   async function onSubmit(values: FormValues) {
+    if (!session?.user?.email) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to perform this action.",
+        variant: "destructive",
+      });
+      return;
+    }
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch("/api/wallet/transaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          type: activeTab.toUpperCase(),
+          email: session.user.email,
+        }),
+      });
 
-      // Simulate success/failure (80% success rate)
-      const success = Math.random() < 0.1;
-      setIsSuccess(success);
-      setIsAlertOpen(true);
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsSuccess(true);
+        form.reset();
+        router.refresh()
+      } else {
+        setIsSuccess(false);
+        toast({
+          title: "Error",
+          description: data.error || "Something went wrong.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      console.error(error);
       setIsSuccess(false);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    } finally {
       setIsAlertOpen(true);
     }
   }

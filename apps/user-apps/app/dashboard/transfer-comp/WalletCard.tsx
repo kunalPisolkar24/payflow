@@ -1,22 +1,48 @@
 "use client";
 
-import { motion } from 'framer-motion'
-import { Wallet, ArrowRight } from 'lucide-react'
-import { Button } from "@repo/ui/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
-import { Label } from "@repo/ui/components/ui/label"
-import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion';
+import { Wallet, ArrowRight } from 'lucide-react';
+import { Button } from "@repo/ui/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@repo/ui/components/ui/card";
+import { Label } from "@repo/ui/components/ui/label";
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 export default function WalletCard() {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [balance, setBalance] = useState<string | null>(null); // Store balance as string
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (session?.user?.email) {
+        try {
+          const response = await fetch(`/api/wallet/balance?email=${session.user.email}`);
+          if (response.ok) {
+            const data = await response.json();
+            setBalance(data.balance); // Balance is already a string from the API
+          } else {
+            console.error("Failed to fetch balance");
+            setBalance("0.00"); // Handle error, set default balance
+          }
+        } catch (error) {
+          console.error("Error fetching balance:", error);
+          setBalance("0.00"); // Handle error, set default balance
+        }
+      }
+    };
+
+    if (session?.user?.email) {
+      fetchBalance();
+    }
+  }, [balance,session]);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Prevents from error is not cleint side rendered
   if (!mounted) {
     return null;
   }
@@ -24,9 +50,7 @@ export default function WalletCard() {
   return (
     <Card
       className={`w-full max-w-md mx-auto ${
-        theme === "dark"
-          ? "text-zinc-50"
-          : "text-zinc-900"
+        theme === "dark" ? "text-zinc-50" : "text-zinc-900"
       }`}
     >
       <CardHeader className="space-y-1">
@@ -70,51 +94,16 @@ export default function WalletCard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              $1,234.56
+              {/* Display balance with 2 decimal places */}
+              {balance !== null ? `$${parseFloat(balance).toFixed(2)}` : "$0.00"}
             </motion.p>
           </div>
         </motion.div>
-        <div className="grid grid-cols-2 gap-4">
-          <Card
-            className={`p-3 ${
-              theme === "dark"
-                ? "bg-zinc-900 text-zinc-50 border border-zinc-700"
-                : "text-zinc-900 border border-zinc-200"
-            }`}
-          >
-            <Label
-              className={`text-sm font-medium ${
-                theme === "dark" ? "text-zinc-300" : "text-zinc-700"
-              }`}
-            >
-              Income
-            </Label>
-            <p className="text-lg font-semibold text-green-500">+$500.00</p>
-          </Card>
-          <Card
-            className={`p-3 ${
-              theme === "dark"
-                ? "bg-zinc-900 text-zinc-50 border border-zinc-700"
-                : "text-zinc-900 border border-zinc-200"
-            }`}
-          >
-            <Label
-              className={`text-sm font-medium ${
-                theme === "dark" ? "text-zinc-300" : "text-zinc-700"
-              }`}
-            >
-              Expenses
-            </Label>
-            <p className="text-lg font-semibold text-red-500">-$250.00</p>
-          </Card>
-        </div>
       </CardContent>
       <CardFooter>
         <Button
           className={`w-full ${
-            theme === "dark"
-              ? "text-zinc-950"
-              : "text-zinc-50 "
+            theme === "dark" ? "text-zinc-950" : "text-zinc-50 "
           }`}
           asChild
         >

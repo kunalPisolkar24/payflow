@@ -17,7 +17,7 @@ export default function SignUpPage() {
     }, 1000); 
 
     if (status === "authenticated" && session) {
-      router.push("/dashboard"); // Redirect to dashboard if already authenticated
+      router.push("/dashboard"); 
     }
 
     return () => clearTimeout(timer);

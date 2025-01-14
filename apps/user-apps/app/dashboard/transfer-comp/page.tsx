@@ -1,14 +1,3 @@
-// import TransferForm from "./TransferForm";
-// import WalletCard from "./WalletCard";
-// const TransferPage: React.FC = () => {
-//   return <>
-//   <WalletCard/>
-//   <TransferForm/>
-//   </>;
-// };
-
-// export default TransferPage;
-
 import TransferForm from "./TransferForm";
 import WalletCard from "./WalletCard";
 

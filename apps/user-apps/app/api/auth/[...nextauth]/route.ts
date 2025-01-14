@@ -49,14 +49,13 @@ export const authOptions: NextAuthOptions = {
 
           const passwordsMatch = await bcrypt.compare(
             validPassword,
-            user.password
+            user.password,
           );
 
           if (!passwordsMatch) {
             return null;
           }
 
-          // Return a user object that matches the expected structure
           return {
             id: user.id.toString(),
             name: user.name,
@@ -88,7 +87,6 @@ export const authOptions: NextAuthOptions = {
           }
         }
       } else if (account?.provider === "google") {
-        // Ensure user exists and is linked to their Google account
         let existingUser = await prisma.user.findUnique({
           where: { email: user.email! },
         });
@@ -100,6 +98,12 @@ export const authOptions: NextAuthOptions = {
               email: user.email,
               emailVerified: new Date(),
               image: user.image,
+            },
+          });
+
+          await prisma.wallet.create({
+            data: {
+              userId: existingUser.id,
             },
           });
         }
@@ -133,8 +137,7 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user, account }): Promise<JWT> {
       if (user) {
-        // During initial sign-in, user object is available
-        token.id = user.id; // Add user ID to the token
+        token.id = user.id;
         token.name = user.name;
         token.email = user.email;
         token.image = user.image;
@@ -142,20 +145,19 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }): Promise<Session> {
-      // When session is accessed, token is available
       if (token) {
         session.user = {
           id: token.id,
           name: token.name,
           email: token.email,
           image: token.image,
-        } as User; // Cast to User type
+        } as User;
       }
       return session;
     },
   },
   session: {
-    strategy: "jwt", // Use JWT strategy for sessions
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
