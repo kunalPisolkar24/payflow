@@ -1,9 +1,9 @@
+import SendMoney from "./send-money";
 const P2PPage: React.FC = () => {
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">P2P Transfer</h1>
-      <p>This is the P2P Transfer page.</p>
-    </div>
+   <main className="pt-[40px] flex items-center justify-center p-4 bg-background text-foreground">
+      <SendMoney />
+    </main>
   );
 }
 

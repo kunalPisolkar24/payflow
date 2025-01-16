@@ -24,6 +24,7 @@
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
     "react-hook-form": "^7.54.2",
+    "sonner": "^1.7.1",
     "usehooks-ts": "^3.1.0",
     "zod": "^3.24.1"
   },

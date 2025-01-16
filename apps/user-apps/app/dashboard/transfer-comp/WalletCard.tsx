@@ -37,7 +37,7 @@ export default function WalletCard() {
     if (session?.user?.email) {
       fetchBalance();
     }
-  }, [balance,session]);
+  }, [session]);
 
   useEffect(() => {
     setMounted(true);
