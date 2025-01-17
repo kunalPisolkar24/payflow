@@ -18,17 +18,6 @@ export async function POST(req: NextRequest) {
       description, // New field for description of TRANSFER
     } = await req.json();
 
-    console.log("Request Body:", {
-      amount,
-      type,
-      email,
-      bank,
-      accountHolderName,
-      accountNumber,
-      ifscCode,
-      recipientEmail,
-      description
-    });
 
     // Validate the amount
     const numericAmount = parseFloat(amount);
