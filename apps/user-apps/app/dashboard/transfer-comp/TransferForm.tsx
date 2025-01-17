@@ -278,7 +278,7 @@ export default function TransferForm() {
   );
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

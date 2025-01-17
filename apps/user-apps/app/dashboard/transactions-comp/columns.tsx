@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react'
-import { Button } from "@repo/ui/components/ui/button"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { Button } from "@repo/ui/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,21 +10,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@repo/ui/components/ui/dropdown-menu"
-import { Badge } from "@repo/ui/components/ui/badge"
+} from "@repo/ui/components/ui/dropdown-menu";
+import { Badge } from "@repo/ui/components/ui/badge";
 
 export type Transaction = {
-  id: number
-  type: "deposit" | "withdraw" | "transfer"
-  status: "PENDING" | "COMPLETED" | "FAILED"
-  amount: number
-  description: string
-  timestamp: string
-  bankName: string | null
-  accountNumber: string | null
-  senderName: string | null
-  recipientName: string | null
-}
+  id: number;
+  type: "deposit" | "withdraw" | "transfer";
+  status: "PENDING" | "COMPLETED" | "FAILED";
+  amount: number;
+  description: string;
+  timestamp: string;
+  bankName: string | null;
+  accountNumber: string | null;
+  senderName: string | null;
+  recipientName: string | null;
+};
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -42,22 +42,22 @@ export const columns: ColumnDef<Transaction>[] = [
           Type
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
-      const type = row.getValue("type") as string
-      return <Badge className="capitalize">{type}</Badge>
+      const type = row.getValue("type") as string;
+      return <Badge className="capitalize">{type}</Badge>;
     },
   },
-//   {
-//     accessorKey: "status",
-//     header: "Status",
-//     cell: ({ row }) => {
-//       const status = row.getValue("status") as string
-//       // @ts-ignore
-//       return <Badge className="capitalize" variant={status === "COMPLETED" ? "success" : status === "PENDING" ? "warning" : "destructive"}>{status}</Badge>
-//     },
-//   },
+  //   {
+  //     accessorKey: "status",
+  //     header: "Status",
+  //     cell: ({ row }) => {
+  //       const status = row.getValue("status") as string
+  //       // @ts-ignore
+  //       return <Badge className="capitalize" variant={status === "COMPLETED" ? "success" : status === "PENDING" ? "warning" : "destructive"}>{status}</Badge>
+  //     },
+  //   },
   {
     accessorKey: "amount",
     header: ({ column }) => {
@@ -69,22 +69,24 @@ export const columns: ColumnDef<Transaction>[] = [
           Amount
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-      const type = row.getValue("type") as "deposit" | "withdraw" | "transfer"
+      const amount = parseFloat(row.getValue("amount"));
+      const type = row.getValue("type") as "deposit" | "withdraw" | "transfer";
+      const recipientName = row.getValue("recipientName") as string | null;
+      const isIncoming = type === "deposit" || (type === "transfer" && recipientName === "You");
 
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-      }).format(amount)
+      }).format(amount);
 
       return (
-        <div className={`font-medium ${type === "deposit" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-          {type === "deposit" ? "+" : "-"} {formatted}
+        <div className={`font-medium ${isIncoming ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+          {isIncoming ? "+" : "-"} {formatted}
         </div>
-      )
+      );
     },
   },
   {
@@ -102,10 +104,10 @@ export const columns: ColumnDef<Transaction>[] = [
           Date
           <ArrowUpDown className="ml-2 h-4 w-3" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
-      return <div>{row.getValue("timestamp")}</div>
+      return <div>{row.getValue("timestamp")}</div>;
     },
   },
   {
@@ -127,7 +129,7 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const transaction = row.original
+      const transaction = row.original;
 
       return (
         <DropdownMenu>
@@ -137,10 +139,15 @@ export const columns: ColumnDef<Transaction>[] = [
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-zinc-100 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">
+          <DropdownMenuContent
+            align="end"
+            className="bg-zinc-100 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100"
+          >
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(transaction.id.toString())}
+              onClick={() =>
+                navigator.clipboard.writeText(transaction.id.toString())
+              }
             >
               Copy transaction ID
             </DropdownMenuItem>
@@ -148,7 +155,7 @@ export const columns: ColumnDef<Transaction>[] = [
             <DropdownMenuItem>View transaction details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];

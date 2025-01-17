@@ -111,7 +111,7 @@ export default function SendMoney() {
                 >
                   <div
                     className={`flex items-center justify-between p-3 rounded-lg ${
-                      theme === "dark" ? "bg-zinc-800" : "bg-zinc-100"
+                      theme === "dark" ? "bg-zinc-900" : "bg-zinc-50"
                     }`}
                   >
                     <div className="flex items-center space-x-3">
