@@ -1,9 +1,7 @@
-import { PrismaClient } from "@repo/db/client";
+import { prisma } from "@repo/db";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
-
-const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   try {

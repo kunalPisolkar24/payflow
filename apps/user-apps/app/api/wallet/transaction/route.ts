@@ -1,8 +1,6 @@
-import { PrismaClient, TransactionType } from "@repo/db/client";
+import { prisma } from "@repo/db";
 import { NextRequest, NextResponse } from "next/server";
 import { Decimal } from "@prisma/client/runtime/library";
-
-const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {

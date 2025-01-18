@@ -1,10 +1,8 @@
-
-import { PrismaClient } from "@repo/db/client";
+import { prisma } from "@repo/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
 
 // Define Zod schema for user registration
 const userSchema = z.object({
