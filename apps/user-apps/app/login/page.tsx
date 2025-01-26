@@ -14,7 +14,7 @@ export default function LoginPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsPageLoading(false);
-    }, 1000); // Simulate loading the LoginForm
+    }, 500); 
 
     if (status === "authenticated") {
       router.push("/dashboard");

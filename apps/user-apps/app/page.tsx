@@ -15,7 +15,7 @@ export default function Page() {
     // Simulate loading data or resources
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // Adjust the timeout as needed
+    }, 100); // Adjust the timeout as needed
 
     return () => clearTimeout(timer);
   }, []);

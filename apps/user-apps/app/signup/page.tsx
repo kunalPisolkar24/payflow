@@ -14,7 +14,7 @@ export default function SignUpPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsPageLoading(false);
-    }, 1000); 
+    }, 500); 
 
     if (status === "authenticated" && session) {
       router.push("/dashboard"); 
