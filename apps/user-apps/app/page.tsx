@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar";
 import TestimonialCarousel from "./components/Testimonials";
 import FAQSection from "./components/FAQSection";
 import Footer from "./components/Footer";
-import { Loader } from "@repo/ui/components/loader"; // Import the Loader component
+import { Loader } from "@repo/ui/components/loader";
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(true);

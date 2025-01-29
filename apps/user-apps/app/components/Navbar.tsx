@@ -34,10 +34,10 @@ const Navbar: React.FC = () => {
             Features
           </Link>
           <Link
-            href="#"
+            href="/docs"
             className="text-sm font-medium transition-colors hover:text-primary"
           >
-            Pricing
+            Documentation
           </Link>
           <Link
             href="#"

@@ -1,0 +1,36 @@
+.force-light-theme {
+  background-color: white !important;
+  color: black !important;
+}
+
+.force-light-theme .swagger-ui {
+  filter: none !important;
+}
+
+/* Ensure the server dropdown and other elements adapt to dark/light theme */
+.swagger-ui {
+  background-color: var(--background-color, white) !important;
+  color: var(--text-color, black) !important;
+}
+
+/* Fix the white background on the servers dropdown */
+.swagger-ui .topbar {
+  background-color: inherit !important;
+}
+
+.swagger-ui select {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+/* Dark theme fix */
+[data-theme='dark'] .swagger-ui {
+  --background-color: #121212;
+  --text-color: #ffffff;
+}
+
+/* Light theme fix */
+[data-theme='light'] .swagger-ui {
+  --background-color: white;
+  --text-color: black;
+}
