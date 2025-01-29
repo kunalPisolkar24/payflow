@@ -3,6 +3,43 @@ import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { prisma } from "@repo/db";
 
+/**
+ * @swagger
+ * /api/transactions:
+ *   get:
+ *     summary: Get user transactions
+ *     description: Retrieves a list of formatted transactions for the currently authenticated user, including deposits, withdrawals, and transfers.
+ *     operationId: getUserTransactions
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Successful response with the user's formatted transactions.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Transaction'
+ *       401:
+ *         description: Unauthorized. The user is not authenticated or the session is invalid.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: User or wallet not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 
 export async function GET(req: NextRequest) {
   try {
@@ -136,3 +173,62 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Transaction:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The transaction ID.
+ *         type:
+ *           type: string
+ *           enum: [deposit, withdraw, transfer]
+ *           description: The type of transaction.
+ *         amount:
+ *           type: number
+ *           format: float
+ *           description: The transaction amount.
+ *         description:
+ *           type: string
+ *           description: The transaction description.
+ *         timestamp:
+ *           type: string
+ *           format: date-time
+ *           description: The transaction timestamp.
+ *         bankName:
+ *           type: string
+ *           nullable: true
+ *           description: The bank name (for deposit/withdraw).
+ *         accountNumber:
+ *           type: string
+ *           nullable: true
+ *           description: The last 4 digits of the account number (for deposit/withdraw).
+ *         senderName:
+ *           type: string
+ *           nullable: true
+ *           description: The sender's name (for transfers).
+ *         recipientName:
+ *           type: string
+ *           nullable: true
+ *           description: The recipient's name (for transfers).
+ *         status:
+ *          type: string
+ *          enum: [completed, pending, failed]
+ *          description: The status of transaction.
+ *     Error:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ *           description: Error message
+ *           example: "Internal Server Error"
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
