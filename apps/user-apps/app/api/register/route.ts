@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 
-
-// Define Zod schema for user registration
 const userSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters long" }),
   email: z.string().email({ message: "Invalid email address" }),
@@ -28,10 +26,8 @@ export async function POST(request: Request) {
 
     const { name, email, password } = validationResult.data;
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user in the database
     const newUser = await prisma.user.create({
       data: {
         name,
@@ -40,7 +36,6 @@ export async function POST(request: Request) {
       },
     });
 
-    // Create a new wallet for the user
     await prisma.wallet.create({
       data: {
         userId: newUser.id,
