@@ -2,6 +2,114 @@ import { prisma } from "@repo/db";
 import { NextRequest, NextResponse } from "next/server";
 import { Decimal } from "@prisma/client/runtime/library";
 
+/**
+ * @swagger
+ * /api/wallet/transaction:
+ *   post:
+ *     summary: Perform a wallet transaction (deposit, withdraw, or transfer)
+ *     description: Handles deposit, withdrawal, and transfer transactions for a user's wallet.
+ *     tags:
+ *       - Wallet
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - amount
+ *               - type
+ *               - email
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 format: float
+ *                 description: The amount of the transaction
+ *                 example: 50.00
+ *               type:
+ *                 type: string
+ *                 enum: [DEPOSIT, WITHDRAW, TRANSFER]
+ *                 description: The type of the transaction (case-insensitive)
+ *                 example: DEPOSIT
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The email address of the user performing the transaction (sender for transfers)
+ *                 example: user@example.com
+ *               bank:
+ *                 type: string
+ *                 description: The name of the bank (required for DEPOSIT and WITHDRAW)
+ *                 example: "State Bank of India"
+ *               accountHolderName:
+ *                  type: string
+ *                  description: Account holder name (required for DEPOSIT and WITHDRAW)
+ *               accountNumber:
+ *                 type: string
+ *                 description: The account number (required for DEPOSIT and WITHDRAW)
+ *                 example: "1234567890"
+ *               ifscCode:
+ *                 type: string
+ *                 description: The IFSC code (required for DEPOSIT and WITHDRAW)
+ *                 example: "SBIN0001234"
+ *               recipientEmail:
+ *                 type: string
+ *                 format: email
+ *                 description: The email address of the recipient user (required for TRANSFER)
+ *                 example: recipient@example.com
+ *               description:
+ *                 type: string
+ *                 description: A description of the transaction (optional, used for TRANSFER)
+ *                 example: "Payment for services"
+ *     responses:
+ *       200:
+ *         description: Transaction successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Transaction successful
+ *       400:
+ *         description: Bad request - invalid input or insufficient funds
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     - Invalid amount
+ *                     - Recipient email is required for transfers
+ *                     - Insufficient funds
+ *                     - Invalid transaction type
+ *       404:
+ *         description: Not found - user or wallet not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   examples:
+ *                     - User or wallet not found
+ *                     - Sender or sender's wallet not found
+ *                     - Recipient or recipient's wallet not found
+ *       500:
+ *         description: Internal server error - transaction failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Transaction failed
+ */
+
 export async function POST(req: NextRequest) {
   try {
     const {
