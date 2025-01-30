@@ -1,6 +1,66 @@
 import { prisma } from "@repo/db";
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/wallet/balance:
+ *   get:
+ *     summary: Get user's wallet balance
+ *     description: Retrieves the balance of a user's wallet based on their email.
+ *     tags:
+ *       - Wallet
+ *     parameters:
+ *       - in: query
+ *         name: email
+ *         required: true
+ *         description: The email address of the user
+ *         schema:
+ *           type: string
+ *           format: email
+ *     responses:
+ *       200:
+ *         description: Successful response - returns the wallet balance
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 balance:
+ *                   type: string
+ *                   description: The wallet balance (as a string)
+ *                   example: "123.45"
+ *       400:
+ *         description: Bad request - email is missing or invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Email is required
+ *       404:
+ *         description: Not found - user or wallet not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: User or wallet not found
+ *       500:
+ *         description: Internal server error - failed to fetch balance
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Failed to fetch balance
+ */
+
 export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
