@@ -34,12 +34,12 @@ const team = [
   {
     name: "Sarah Chen",
     role: "CEO, FinFlow",
-    avatar: "/placeholder.svg?height=40&width=40", // Replace with actual image paths
+    avatar: "https://api.dicebear.com/9.x/lorelei/svg?seed=Adrian",
   },
   {
     name: "David Kumar",
     role: "CTO, FinFlow",
-    avatar: "/placeholder.svg?height=40&width=40", // Replace with actual image paths
+    avatar: "https://api.dicebear.com/9.x/lorelei/svg?seed=Leah", 
   },
 ];
 

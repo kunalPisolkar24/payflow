@@ -24,42 +24,42 @@ const testimonials: Testimonial[] = [
     quote: "PayFlow has revolutionized how we handle international payments. The speed and security are unmatched in the industry.",
     author: "John Doe",
     role: "CEO & Founder",
-    avatar: "/api/placeholder/40/40",
+    avatar: "https://api.dicebear.com/9.x/notionists/svg?seed=Liam",
     initials: "JD"
   },
   {
     quote: "The integration was seamless, and the customer support team has been exceptional. We've seen a 50% reduction in payment processing time.",
     author: "Jane Doe",
     role: "CTO",
-    avatar: "/api/placeholder/40/40",
+    avatar: "https://api.dicebear.com/9.x/notionists/svg?seed=Mackenzie",
     initials: "JD"
   },
   {
     quote: "As a global business, we needed a reliable payment solution. PayFlow delivered beyond our expectations with their innovative platform.",
     author: "John Smith",
     role: "COO",
-    avatar: "/api/placeholder/40/40",
+    avatar: "https://api.dicebear.com/9.x/notionists/svg?seed=Vivian",
     initials: "JS"
   },
   {
     quote: "PayFlow's analytics dashboard gives us invaluable insights into our payment trends. It's a game-changer for financial planning.",
     author: "Sarah Lee",
     role: "Financial Analyst",
-    avatar: "/api/placeholder/40/40",
+    avatar: "https://api.dicebear.com/9.x/notionists/svg?seed=Sadie",
     initials: "SL"
   },
   {
     quote: "We were impressed by how easily PayFlow integrated with our existing CRM. It's streamlined our entire payment workflow.",
     author: "Mark Johnson",
     role: "Head of Operations",
-    avatar: "/api/placeholder/40/40",
+    avatar: "https://api.dicebear.com/9.x/notionists/svg?seed=Jocelyn",
     initials: "MJ"
   },
   {
     quote: "With PayFlow, we've expanded our business into new markets with confidence. Their multi-currency support is exceptional.",
     author: "Emily Chen",
     role: "VP of International Expansion",
-    avatar: "/api/placeholder/40/40",
+    avatar: "https://api.dicebear.com/9.x/notionists/svg?seed=Sadie",
     initials: "EC"
   }
 ];
