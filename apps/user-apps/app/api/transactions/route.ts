@@ -141,7 +141,7 @@ export async function GET(req: NextRequest) {
       id: transaction.id,
       type: transaction.type.toLowerCase(),
       amount: transaction.amount,
-      description: transaction.description,
+      description: transaction.description || "",
       timestamp: transaction.timestamp.toLocaleString("en-US", {
         dateStyle: "medium",
         timeStyle: "short",

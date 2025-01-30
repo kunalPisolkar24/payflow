@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { DataTable } from "./data-table";
 import { columns, Transaction } from "./columns";
-import { Loader } from "@repo/ui/components/loader"; // Import your Loader component
+import { Loader } from "@repo/ui/components/loader"; 
 
 export function Transactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
