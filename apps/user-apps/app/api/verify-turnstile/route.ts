@@ -1,5 +1,68 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/**
+ * @swagger
+ * /api/verify-turnstile:
+ *   post:
+ *     summary: Verify Turnstile Token
+ *     description: Verifies the validity of a Cloudflare Turnstile token.
+ *     tags:
+ *       - Turnstile
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The Turnstile token to verify.
+ *                 example: "your_turnstile_token_here"
+ *             required:
+ *               - token
+ *     responses:
+ *       200:
+ *         description: Turnstile token is valid.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *       400:
+ *         description: Bad Request - Turnstile token is missing.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Turnstile token is required"
+ *       401:
+ *         description: Unauthorized - Invalid Turnstile token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid Turnstile token"
+ *       500:
+ *         description: Internal Server Error - Error verifying Turnstile token.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
 export async function POST(req: NextRequest) {
   try {
     const { token } = await req.json();
