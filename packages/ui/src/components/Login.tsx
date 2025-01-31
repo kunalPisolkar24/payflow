@@ -11,6 +11,7 @@ import { Label } from "@repo/ui/components/ui/label";
 import { useTheme } from "next-themes";
 import { signIn } from "next-auth/react";
 import { useToast } from "@repo/ui/hooks/use-toast";
+import TurnstileComponent from "./Turnstile";
 
 interface LoginFormProps {
   isLoading: boolean;
@@ -21,20 +22,46 @@ export default function LoginForm({ isLoading: isSubmitting }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    if (!turnstileToken) {
+      toast({
+        title: "Verification Required",
+        description: "Please complete the security check.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
     try {
+      const verifyResponse = await fetch("/api/verify-turnstile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      if (!verifyResponse.ok) {
+        const errorData = await verifyResponse.json();
+        throw new Error(errorData.error || "Invalid Turnstile token");
+      }
+
       const result = await signIn("credentials", {
         redirect: false,
         email: email,
         password: password,
+        turnstileToken: turnstileToken,
       });
 
       if (result?.error) {
@@ -49,21 +76,24 @@ export default function LoginForm({ isLoading: isSubmitting }: LoginFormProps) {
           title: "Login Successful",
           description: "You have successfully logged in.",
         });
-        // Redirect to the dashboard after successful login
         window.location.href = "/dashboard";
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login failed:", error);
-      setError("An unexpected error occurred during login");
+      setError(error.message || "An unexpected error occurred during login");
       toast({
         title: "Error",
-        description: "An unexpected error occurred.",
+        description: error.message || "An unexpected error occurred.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   }
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+  };
 
   return (
     <div className="container relative min-h-screen flex-col items-center justify-center py-12 grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -91,8 +121,9 @@ export default function LoginForm({ isLoading: isSubmitting }: LoginFormProps) {
         >
           <blockquote className="space-y-2">
             <p className="text-lg">
-              “PayFlow has revolutionized how we handle international payments.
-              The platform's speed and security are unmatched in the industry.”
+              “PayFlow has revolutionized how we handle international
+              payments. The platform's speed and security are unmatched in the
+              industry.”
             </p>
             <footer className="text-sm">Sofia Davis, CEO of GlobalTech</footer>
           </blockquote>
@@ -144,6 +175,21 @@ export default function LoginForm({ isLoading: isSubmitting }: LoginFormProps) {
                     required
                   />
                 </div>
+                <div>
+                  <TurnstileComponent
+                    siteKey="0x4AAAAAAA63Bocrdvuby7Jk"
+                    onVerify={handleTurnstileVerify}
+                    onError={(error) => {
+                      console.error("Turnstile error:", error);
+                      toast({
+                        title: "Verification Error",
+                        description: "There was an error with the verification process.",
+                        variant: "destructive",
+                      });
+                    }}
+                    
+                  />
+                </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-4 pt-4">
                 <Button className="w-full" type="submit" disabled={isLoading}>
@@ -160,7 +206,6 @@ export default function LoginForm({ isLoading: isSubmitting }: LoginFormProps) {
                     })
                   }
                 >
-                  
                   <svg
                     className="mr-2 h-4 w-4"
                     viewBox="0 0 24 24"
