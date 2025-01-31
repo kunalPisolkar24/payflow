@@ -10,8 +10,8 @@ import { Input } from "@repo/ui/components/ui/input";
 import { Label } from "@repo/ui/components/ui/label";
 import { useTheme } from "next-themes";
 import { signIn } from "next-auth/react";
-import { useToast } from "@repo/ui/hooks/use-toast"; // Import useToast hook
-import { ToastAction } from "@repo/ui/components/ui/toast";
+import { useToast } from "@repo/ui/hooks/use-toast";
+import TurnstileComponent from "./Turnstile";
 
 interface SignUpFormProps {
   isLoading: boolean;
@@ -23,37 +23,65 @@ export default function SignUpForm({
   const { resolvedTheme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast(); // Use the useToast hook
+  const { toast } = useToast();
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    if (!turnstileToken) {
+      toast({
+        title: "Verification Required",
+        description: "Please complete the security check.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     const formData = new FormData(event.currentTarget);
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
     try {
+      const verifyResponse = await fetch("/api/verify-turnstile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: turnstileToken }),
+      });
+
+      if (!verifyResponse.ok) {
+        const errorData = await verifyResponse.json();
+        throw new Error(errorData.error || "Invalid Turnstile token");
+      }
+
       const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          turnstileToken,
+        }),
       });
 
       if (response.ok) {
-        // On successful registration, attempt to sign in the user
         const signInResult = await signIn("credentials", {
           email,
           password,
           redirect: true,
-          callbackUrl: "/dashboard", // Redirect to the homepage after sign in
+          callbackUrl: "/dashboard",
         });
 
         if (!signInResult?.error) {
-          // Show success toast
           toast({
             title: "Sign up successful",
             description: "You have successfully created an account.",
@@ -67,26 +95,28 @@ export default function SignUpForm({
       } else {
         const errorData = await response.json();
         setError(errorData.error || "Registration failed");
-        // Show error toast
         toast({
           title: "Error",
           description: errorData.error || "Registration failed",
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("An error occurred during registration:", error);
-      setError("An unexpected error occurred");
-      // Show error toast
+      setError(error.message || "An unexpected error occurred");
       toast({
         title: "Error",
-        description: "An unexpected error occurred.",
+        description: error.message || "An unexpected error occurred.",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
   }
+
+  const handleTurnstileVerify = (token: string) => {
+    setTurnstileToken(token);
+  };
 
   return (
     <div className="container relative min-h-screen flex-col items-center justify-center py-12 grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -99,19 +129,13 @@ export default function SignUpForm({
             filter: "blur(4px)",
           }}
         />
-        {
-          // @ts-ignore
-          <Link
-            href="/"
-            className="relative z-20 flex items-center text-lg font-medium"
-          >
-            {
-              // @ts-ignore
-              <Wallet2 className="mr-2 h-6 w-6" />
-            }
-            PayFlow
-          </Link>
-        }
+        <Link
+          href="/"
+          className="relative z-20 flex items-center text-lg font-medium"
+        >
+          <Wallet2 className="mr-2 h-6 w-6" />
+          PayFlow
+        </Link>
         <motion.div
           className="relative z-20 mt-auto"
           initial={{ opacity: 0, y: 20 }}
@@ -191,6 +215,21 @@ export default function SignUpForm({
                     Must be at least 8 characters.
                   </p>
                 </div>
+                <div>
+                  <TurnstileComponent
+                    siteKey="0x4AAAAAAA63Bocrdvuby7Jk"
+                    onVerify={handleTurnstileVerify}
+                    onError={(error) => {
+                      console.error("Turnstile error:", error);
+                      toast({
+                        title: "Verification Error",
+                        description:
+                          "There was an error with the verification process.",
+                        variant: "destructive",
+                      });
+                    }}
+                  />
+                </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-4 pt-4">
                 <Button className="w-full" type="submit" disabled={isLoading}>
@@ -240,15 +279,12 @@ export default function SignUpForm({
           </Card>
           <p className="px-8 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            {
-              // @ts-ignore
-              <Link
-                href="/login"
-                className="underline underline-offset-4 hover:text-primary"
-              >
-                <strong> Log in</strong>
-              </Link>
-            }
+            <Link
+              href="/login"
+              className="underline underline-offset-4 hover:text-primary"
+            >
+              <strong> Log in</strong>
+            </Link>
           </p>
         </div>
       </div>
