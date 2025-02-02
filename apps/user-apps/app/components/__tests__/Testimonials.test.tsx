@@ -2,8 +2,8 @@ import { describe, it} from 'vitest';
 import { render } from '@testing-library/react';
 import Navbar from '../Navbar';
 
-describe("Navbar Component", () => {
-    it("Navbar Render Check", () => {
+describe("Testimonials Components", () => {
+    it("Testimonials Render Check", () => {
         render(<Navbar/>);
     });
 });
