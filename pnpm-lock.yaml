@@ -138,6 +138,9 @@ importers:
       usehooks-ts:
         specifier: ^3.1.0
         version: 3.1.0(react@18.3.1)
+      vitest-mock-extended:
+        specifier: ^2.0.2
+        version: 2.0.2(typescript@5.6.3)(vitest@3.0.4(@types/node@20.11.6)(happy-dom@16.8.1)(jiti@1.21.0)(jsdom@26.0.0))
       zod:
         specifier: ^3.24.1
         version: 3.24.1
@@ -4656,6 +4659,14 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
+  ts-essentials@10.0.4:
+    resolution: {integrity: sha512-lwYdz28+S4nicm+jFi6V58LaAIpxzhg9rLdgNC1VsdP/xiFBseGhF1M/shwCk6zMmwahBZdXcl34LVHrEang3A==}
+    peerDependencies:
+      typescript: '>=4.5.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
@@ -4924,6 +4935,12 @@ packages:
         optional: true
       yaml:
         optional: true
+
+  vitest-mock-extended@2.0.2:
+    resolution: {integrity: sha512-n3MBqVITKyclZ0n0y66hkT4UiiEYFQn9tteAnIxT0MPz1Z8nFcPUG3Cf0cZOyoPOj/cq6Ab1XFw2lM/qM5EDWQ==}
+    peerDependencies:
+      typescript: 3.x || 4.x || 5.x
+      vitest: '>=2.0.0'
 
   vitest@3.0.4:
     resolution: {integrity: sha512-6XG8oTKy2gnJIFTHP6LD7ExFeNLxiTkK3CfMvT7IfR8IN+BYICCf0lXUQmX7i7JoxUP8QmeP4mTnWXgflu4yjw==}
@@ -9975,6 +9992,10 @@ snapshots:
     dependencies:
       typescript: 5.6.3
 
+  ts-essentials@10.0.4(typescript@5.6.3):
+    optionalDependencies:
+      typescript: 5.6.3
+
   ts-interface-checker@0.1.13: {}
 
   ts-mixer@6.0.4: {}
@@ -10271,6 +10292,12 @@ snapshots:
       '@types/node': 22.10.7
       fsevents: 2.3.3
       jiti: 1.21.0
+
+  vitest-mock-extended@2.0.2(typescript@5.6.3)(vitest@3.0.4(@types/node@20.11.6)(happy-dom@16.8.1)(jiti@1.21.0)(jsdom@26.0.0)):
+    dependencies:
+      ts-essentials: 10.0.4(typescript@5.6.3)
+      typescript: 5.6.3
+      vitest: 3.0.4(@types/node@20.11.6)(happy-dom@16.8.1)(jiti@1.21.0)(jsdom@26.0.0)
 
   vitest@3.0.4(@types/node@20.11.6)(happy-dom@16.8.1)(jiti@1.21.0)(jsdom@26.0.0):
     dependencies:
