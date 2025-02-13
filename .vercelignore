@@ -1,0 +1,5 @@
+# .vercelignore
+apps/user-apps/**/*.test.js
+apps/user-apps/**/*.spec.js
+apps/user-apps/**/*.test.ts
+apps/user-apps/**/*.spec.ts
