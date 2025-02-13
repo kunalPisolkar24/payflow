@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
 
     // 3.4. Add senderName and recipientName to transfer transactions
     const transferTransactionsWithNames = transferTransactions.map(
-      (transaction) => {
+      (transaction: any) => {
         let senderName: string | null = null;
         let recipientName: string | null = null;
 
