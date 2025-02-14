@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3002",
+    "prebuild": "turbo run build --filter=@repo/db",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 0",

@@ -7,8 +7,9 @@
       }
     ],
     "paths": {
-      "~/*": ["./*"]
-    },
+      "~/*": ["./*"],
+      "@repo/db": ["../../packages/db/src"]
+    }
   },
   "include": [
     "next-env.d.ts",
